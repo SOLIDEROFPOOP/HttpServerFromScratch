@@ -10,16 +10,18 @@ import java.net.Socket;
 
 public class HttpConnectionWorker extends Thread {
     private Socket socket;
+    private InputStream inputStream;
+    private OutputStream outputStream;
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpConnectionWorker.class);
-    private HttpConnectionWorker(Socket socket){
+    public HttpConnectionWorker(Socket socket){
         this.socket = socket;
     }
 
     @Override
     public void run(){
         try {
-            InputStream inputStream = socket.getInputStream();
-            OutputStream outputStream = socket.getOutputStream();
+            inputStream = socket.getInputStream();
+            outputStream = socket.getOutputStream();
 
             String html = "<html><head><title>Simple Java HTTP Server</title></head><body><h1>This page was server with my simple java http server</h1></body></html>";
             final String CRLF = "\n\r"; //13, 10
@@ -32,12 +34,19 @@ public class HttpConnectionWorker extends Thread {
 
             outputStream.write(response.getBytes());
             // TODO: sdelat' writing
-            inputStream.close();
-            outputStream.close();
-            socket.close();
             LOGGER.info("* Connection Processing finished!");
         } catch (IOException e){
-            e.printStackTrace();
+            LOGGER.error("Problem with communication", e);
+        } finally {
+            try {
+                inputStream.close();
+            } catch (IOException e) {}
+            try {
+                outputStream.close();
+            } catch (IOException e) {}
+            try {
+                socket.close();
+            } catch (IOException e) {}
         }
     }
 }

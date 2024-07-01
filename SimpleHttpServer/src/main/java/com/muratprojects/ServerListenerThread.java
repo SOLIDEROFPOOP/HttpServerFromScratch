@@ -25,10 +25,20 @@ public class ServerListenerThread extends Thread{
             while (serverSocket.isBound() && !serverSocket.isClosed()) {
                 Socket socket = serverSocket.accept();
                 LOGGER.info(" * Connection accepted: " + socket.getInetAddress());
+                HttpConnectionWorker connectionWorker = new HttpConnectionWorker(socket);
+                connectionWorker.start();
             }
-            // TODO: sdelat' serversocket close
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            LOGGER.error("Problem with setting socket " , e);
+        } finally {
+            if (serverSocket != null){
+                try {
+                    serverSocket.close();
+                } catch (IOException e) {
+
+                }
+            }
         }
     }
 }
