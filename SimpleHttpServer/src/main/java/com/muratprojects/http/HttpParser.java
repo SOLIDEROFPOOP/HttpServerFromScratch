@@ -8,7 +8,6 @@ import java.io.InputStream;
 public class HttpParser {
     private final static Logger LOGGER = LoggerFactory.getLogger(HttpParser.class);
 
-
     public void parseHttpRequest(InputStream inputStream){
         parseRequestLine(inputStream);
         parseHeaders(inputStream);
